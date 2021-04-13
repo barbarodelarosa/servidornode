@@ -4,7 +4,14 @@
  const { esRolValido, existeEmail, existeUsuarioPorId } = require('../helpers/db-validators');
 
  const router = Router();
- const { validarCampos } = require('../middlewares/validar-campos');
+ const {
+     validarCampos,
+     validarJWT,
+     tieneRole
+ } = require('../middlewares/index');
+ //  const { validarCampos } = require('../middlewares/validar-campos');
+ //  const { validarJWT } = require('../middlewares/validar-jwt');
+ //  const { tieneRole } = require('../middlewares/validar-roles');
 
  router.get('/', api_usuarios.usuariosGet);
  router.post('/', [
@@ -28,6 +35,9 @@
 
 
  router.delete('/:id', [
+     validarJWT,
+     //  adminRole,
+     tieneRole('ADMIN_ROLE', 'VENTAS_ROLE'),
      check('id', 'No es un id válido').isMongoId(),
      check('id').custom(existeUsuarioPorId),
      validarCampos

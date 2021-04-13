@@ -85,10 +85,15 @@ const usuariosPatch = (req, res = response) => {
 
 const usuariosDelete = async(req, res = response) => {
     const { id } = req.params;
+
+    // Extrae el usuario que viene por el request del middleware
+    const usuarioAutenticado = req.usuario;
+    // const uid = req.uid;
     // const usuario = await Usuario.findByIdAndDelete(id);
     const usuario = await Usuario.findByIdAndUpdate(id, { state: false }, { new: true });
     res.json({
-        usuario
+        usuario,
+        usuarioAutenticado
     });
 }
 

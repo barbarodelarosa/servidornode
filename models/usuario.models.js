@@ -1,6 +1,7 @@
 const { Schema, model } = require('mongoose');
 
 const UsuarioSchema = Schema({
+
     name: {
         type: String,
         required: [true, 'El nombre es requerido']
@@ -38,7 +39,8 @@ const UsuarioSchema = Schema({
 // no deja que esos campos se muestren y solo se quedan en la BD 
 
 UsuarioSchema.methods.toJSON = function() {
-    const { __v, password, ...usuario } = this.toObject();
+    const { __v, password, _id, ...usuario } = this.toObject();
+    usuario.uid = _id;
     return usuario;
 }
 
