@@ -1,7 +1,7 @@
  const { Router } = require('express');
  const { check } = require('express-validator');
  const api_usuarios = require('../controllers/usuarios.controllers');
- const { esRolValido, existeEmail, existeUsuarioPorId } = require('../helpers/db-validators');
+ const { esRolValido, existeEmail, existeUsuarioPorId } = require('../helpers/db-validators.helpers');
 
  const router = Router();
  const {
@@ -20,8 +20,8 @@
 
      check('email', 'El correo no es valido').isEmail(),
      check('email').custom(existeEmail),
-     check('rol').custom(esRolValido),
-     //  check('rol', 'No es un rol válido').isIn(['ADMIN_ROLE', 'USER_ROLE']),
+     //  check('rol').custom(esRolValido),
+     check('rol', 'No es un rol válido').isIn(['ADMIN_ROLE', 'USER_ROLE', 'VENTA_ROLE']),
      validarCampos
  ], api_usuarios.usuariosPost);
 
@@ -43,7 +43,7 @@
      validarCampos
  ], api_usuarios.usuariosDelete);
 
- router.patch('/', api_usuarios.usuariosPatch);
+ //  router.patch('/', api_usuarios.usuariosPatch);
 
 
 
