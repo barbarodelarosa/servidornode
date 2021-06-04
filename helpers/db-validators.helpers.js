@@ -1,20 +1,21 @@
 // const Role = require('../models/role.models');
 // const Usuario = require('../models/usuario.models');
-const { Usuario, Categoria, Role, Producto, Tienda } = require('../models/index')
+const { Usuario, Categoria, CategoriaTienda, Role, Producto, Tienda, Post } = require('../models/index')
 
 const esRolValido = async(rol = '') => {
     const existeRol = await Role.findOne({ rol });
+    console.log(existeRol);
     if (!existeRol) {
         throw new Error(`El rol ${rol} no existe`)
     }
 }
 
 
-const existeEmail = async(email) => {
+const existeEmail = async(correo) => {
 
-    const Email = await Usuario.findOne({ email });
+    const Email = await Usuario.findOne({ correo });
     if (Email) {
-        throw new Error(`El correo: ${email} ya está registrado`)
+        throw new Error(`Ya existe una cuenta con el correo: ${correo}`)
             // return res.status(400).json({
             //     msg: 'El correo ya está registrado'
             // });
@@ -35,6 +36,26 @@ const existeUsuarioPorId = async(id) => {
 const existeCategoriaPorId = async(id) => {
 
     const existeId = await Categoria.findById(id);
+    if (!existeId) {
+        throw new Error(`No existe categoria con el id: ${id}`)
+            // return res.status(400).json({
+            //     msg: 'El correo ya está registrado'
+            // });
+    }
+}
+const existePostPorId = async(id) => {
+
+    const existeId = await Post.findById(id);
+    if (!existeId) {
+        throw new Error(`No existe Post con el id: ${id}`)
+            // return res.status(400).json({
+            //     msg: 'El correo ya está registrado'
+            // });
+    }
+}
+const existeCategoriaTiendaPorId = async(id) => {
+
+    const existeId = await CategoriaTienda.findById(id);
     if (!existeId) {
         throw new Error(`No existe categoria con el id: ${id}`)
             // return res.status(400).json({
@@ -83,5 +104,7 @@ module.exports = {
     existeCategoriaPorId,
     existeProductoPorId,
     existeTiendaPorId,
-    coleccionesPermitidas
+    coleccionesPermitidas,
+    existeCategoriaTiendaPorId,
+    existePostPorId
 }

@@ -13,29 +13,47 @@ const ProductoSchema = Schema({
     usuario: {
         type: Schema.Types.ObjectId,
         ref: 'Usuario',
-        required: true
+        required: [true, 'El usuario es requerido']
     },
     categoria: {
         type: Schema.Types.ObjectId,
         ref: 'Categoria',
-        // required: true,
+        required: [true, 'La categoria es requerida']
 
+    },
+    tienda: {
+        type: Schema.Types.ObjectId,
+        ref: 'Tienda',
+        required: [true, 'La tienda es requerida']
     },
     disponible: {
         type: Boolean,
         default: true,
         required: true
     },
-    descipcion: {
+    detalles: {
+        type: String,
+    },
+    codigo: {
+        type: String,
+    },
+    enlace: {
         type: String,
     },
     precio: {
         type: Number,
     },
-    img: {
+    imagen: [{
         type: String,
-    },
+    }],
+    comentario: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Comentario',
+        type: String,
+    }],
 
+}, {
+    timestamps: true,
 });
 
 

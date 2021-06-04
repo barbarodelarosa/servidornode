@@ -2,11 +2,11 @@ const { response } = require("express");
 const { subirArchivo } = require("../helpers");
 const path = require('path');
 const fs = require('fs');
+const jwt = require('jsonwebtoken');
 
-const { Usuario, Categoria, Tienda, Producto } = require('../models')
+const { Usuario, Categoria, Tienda, Producto, CategoriaTienda, Post } = require('../models')
 
 const cargarArchivo = async(req, res = response) => {
-
 
     // if (!req.files || Object.keys(req.files).length === 0 || !req.files.archivo) {
     //     res.status(400).json({
@@ -17,10 +17,20 @@ const cargarArchivo = async(req, res = response) => {
     // Subir imagenes
 
     try {
-        const nombre = await subirArchivo(req.files, undefined, 'imgs');
+        // La funcion sirve para subir archivos
+        if (!req.files.archivo.mimetype.includes('image')) {
+            return res.json({
+                msg: 'El archivo no es una imagen'
+            });
+        }
+
+        // SUBE LOS ARCHIVOS PARA LA CARPETA TEMP
+        const nombre = await subirArchivo(req.files, `imagenes/${req.usuario._id}/temp`);
+
 
         res.json({
-            nombre
+            nombre,
+            nombreNuevo
         });
 
     } catch (msg) {
@@ -31,6 +41,12 @@ const cargarArchivo = async(req, res = response) => {
     }
 
 }
+
+
+
+
+
+
 
 const actualizarImagen = async(req, res = response) => {
 
@@ -78,15 +94,15 @@ const actualizarImagen = async(req, res = response) => {
     }
 
     // Limpar imagen anterior
-    if (modelo.img) {
+    if (modelo.imagen) {
         // Borrar imagen del servidor
-        const pathImagen = path.join(__dirname, '../uploads', coleccion, modelo.img);
+        const pathImagen = path.join(__dirname, '../uploads', coleccion, modelo.imagen);
         if (fs.existsSync(pathImagen)) {
             console.log(pathImagen);
             fs.unlinkSync(pathImagen);
         }
     }
-    modelo.img = await subirArchivo(req.files, undefined, coleccion);
+    modelo.imagen = await subirArchivo(req.files, coleccion);
 
     await modelo.save();
 
@@ -110,6 +126,14 @@ const mostrarImagen = async(req, res = response) => {
             if (!modelo) {
                 return res.status(500).json({
                     msg: `No existe un usuario con el id: ${id}`
+                })
+            }
+            break;
+        case 'posts':
+            modelo = await Post.findById(id);
+            if (!modelo) {
+                return res.status(500).json({
+                    msg: `No existe un post con el id: ${id}`
                 })
             }
             break;
@@ -144,9 +168,9 @@ const mostrarImagen = async(req, res = response) => {
     }
 
     // Limpar imagen anterior
-    if (modelo.img) {
+    if (modelo.imagenes) {
         // Borrar imagen del servidor
-        const pathImagen = path.join(__dirname, '../uploads', coleccion, modelo.img);
+        const pathImagen = path.resolve(__dirname, '../uploads', coleccion, modelo.imagenes);
         if (fs.existsSync(pathImagen)) {
             return res.sendFile(pathImagen);
         }
@@ -157,9 +181,16 @@ const mostrarImagen = async(req, res = response) => {
 
 }
 
+const getImagenUrl = (userId, coleccion, img) => {
+    const pathImagen = path.resolve(__dirname, '../uploads/imagenes', userId, coleccion, img);
+    // crear codigo, si no existe imagen, eviar una imagen por defecto
+    return pathImagen;
+}
+
 
 module.exports = {
     cargarArchivo,
     actualizarImagen,
-    mostrarImagen
+    mostrarImagen,
+    getImagenUrl
 }

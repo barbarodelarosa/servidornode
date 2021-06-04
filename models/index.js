@@ -4,6 +4,8 @@ const Server = require('./server');
 const Usuario = require('./usuario.models');
 const Producto = require('./producto.models');
 const Tienda = require('./tienda.models');
+const CategoriaTienda = require('./categoria-tienda.models');
+const Post = require('./post.models');
 
 
 
@@ -13,5 +15,7 @@ module.exports = {
     Server,
     Usuario,
     Producto,
-    Tienda
+    Tienda,
+    CategoriaTienda,
+    Post
 }

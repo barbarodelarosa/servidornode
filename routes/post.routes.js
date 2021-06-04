@@ -1,13 +1,14 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
 const {
-    crearCategoria,
-    obtenerCategorias,
-    obtenerCategoria,
-    actualizarCategoria,
-    borrarCategoria
-} = require('../controllers/categorias.controllers');
-const { existeCategoriaPorId } = require('../helpers/db-validators.helpers');
+    crearPost,
+    obtenerPost,
+    obtenerPostPorId,
+    actualizarPost,
+    borrarPost
+
+} = require('../controllers');
+const { existePostPorId } = require('../helpers/db-validators.helpers');
 
 const { existeCategoria } = require('../helpers/existe-categoria.helpers');
 const router = Router();
@@ -22,7 +23,7 @@ const {
 
 
 // Get para obtener todas categoria publico
-router.get('/', obtenerCategorias);
+router.get('/', obtenerPost);
 
 
 
@@ -30,17 +31,17 @@ router.get('/', obtenerCategorias);
 
 router.get('/:id', [
     check('id', 'No es un id válido').isMongoId(),
-    check('id').custom(existeCategoria),
+    check('id').custom(existePostPorId),
     validarCampos,
-], obtenerCategoria);
+], obtenerPostPorId);
 
 // Crear una categoria privado a cualquier persona con un token valido
 router.post('/', [
     validarJWT,
-    check('nombre', 'El nombre es obligatorio').not().isEmpty(),
+    check('mensaje', 'Es obligatorio el mensaje').not().isEmpty(),
     tieneRole('ADMIN_ROLE'),
     validarCampos,
-], crearCategoria);
+], crearPost);
 
 
 // Actualizar por ID
@@ -48,23 +49,20 @@ router.post('/', [
 router.put('/:id', [
     validarJWT,
     check('id', 'No es un id válido').isMongoId(),
-    check('id').custom(existeCategoriaPorId),
-    check('nombre', 'El nombre es obligatorio').not().isEmpty(),
+    check('id').custom(existePostPorId),
     tieneRole('ADMIN_ROLE'),
     validarCampos,
-], actualizarCategoria);
+], actualizarPost);
 
 // Borrar solo si es un ADMIN
 
 router.delete('/:id', [
     validarJWT,
     check('id', 'No es un id válido').isMongoId(),
-    check('id').custom(existeCategoriaPorId),
+    check('id').custom(existePostPorId),
     tieneRole('ADMIN_ROLE'),
     validarCampos,
-], borrarCategoria);
-
-
+], borrarPost);
 
 
 

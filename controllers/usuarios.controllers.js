@@ -6,7 +6,7 @@ const usuariosGet = async(req, res = response) => {
     // const limite = req.params.limite;
     // const desde = req.params.desde;
     const { limite = 5, desde = 0 } = req.query;
-    const query = { state: true };
+    const query = { estado: true };
     // const usuarios = await Usuario.find(query)
     //     .limit(Number(limite))
     //     .skip(Number(desde));
@@ -23,26 +23,44 @@ const usuariosGet = async(req, res = response) => {
         usuarios
     });
 }
+const usuariosGetPorId = async(req, res = response) => {
 
+    const query = { estado: true };
+    const uid = req.params.id;
+    const usuario = await Usuario.findById(uid).find(query);
 
+    res.json({
+
+        usuario
+    });
+}
+
+const obtenerUsuario = async(req, res = response) => {
+    const usuario = req.usuario
+
+    res.json({
+        ok: true,
+        usuario
+    });
+}
+
+// REGISTRAR USUARIO
 const usuariosPost = async(req, res = response) => {
 
-
-
-    const { name, password, email, rol } = req.body;
-    const usuario = new Usuario({ name, password, email, rol });
+    const { nombreusuario, contrasena, correo, rol, avatar } = req.body;
+    console.log(req.body);
     // Verificar email
-    // const existeEmail = await Usuario.findOne({ email });
-    // console.log('Este el el email', existeEmail);
-    // if (existeEmail) {
+    // const existeNombreUsuario = await Usuario.findOne({ nombreusuario });
+    // if (existeNombreUsuario) {
     //     return res.status(400).json({
-    //         msg: 'El correo ya está registrado'
+    //         msg: `Ya existe el nombre de usuario ->${existeNombreUsuario.nombreusuario}`
     //     });
     // }
+    const usuario = new Usuario({ nombreusuario, contrasena, correo, rol, avatar });
 
     // Encripta la contrasena
     const salt = bcryptjs.genSaltSync();
-    usuario.password = bcryptjs.hashSync(password, salt);
+    usuario.contrasena = bcryptjs.hashSync(contrasena, salt);
     // Guarda en la base de datos
     usuario.save();
     res.json({
@@ -54,12 +72,12 @@ const usuariosPost = async(req, res = response) => {
 
 const usuariosPut = async(req, res = response) => {
     const id = req.params.id;
-    const { _id, password, google, email, ...resto } = req.body;
+    const { _id, contrasena, google, correo, ...resto } = req.body;
 
     // Validar contra Base de datos
-    if (password) {
+    if (contrasena) {
         const salt = bcryptjs.genSaltSync();
-        resto.password = bcryptjs.hashSync(password, salt);
+        resto.contrasena = bcryptjs.hashSync(contrasena, salt);
     }
 
     console.log('Este el valor deresto ANTES:', resto);
@@ -84,7 +102,7 @@ const usuariosDelete = async(req, res = response) => {
     const usuarioAutenticado = req.usuario;
     // const uid = req.uid;
     // const usuario = await Usuario.findByIdAndDelete(id);
-    const usuario = await Usuario.findByIdAndUpdate(id, { state: false }, { new: true });
+    const usuario = await Usuario.findByIdAndUpdate(id, { estado: false }, { new: true });
     res.json({
         usuario,
         usuarioAutenticado
@@ -93,8 +111,9 @@ const usuariosDelete = async(req, res = response) => {
 
 module.exports = {
     usuariosGet,
+    obtenerUsuario,
     usuariosPost,
     usuariosPut,
-
+    usuariosGetPorId,
     usuariosDelete
 }

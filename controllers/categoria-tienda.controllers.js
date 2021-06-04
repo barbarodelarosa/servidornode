@@ -1,15 +1,16 @@
 const { response, request } = require("express");
-const { Categoria, Usuario } = require("../models");
+const { CategoriaTienda, Usuario } = require("../models");
 
 
 // obtenerCategorias - paginado - total - populate
-const obtenerCategorias = async(req, res = response) => {
+const obtenerCategoriasTiendas = async(req, res = response) => {
+
 
     const { limite = 20, desde = 0 } = req.query;
     const query = { estado: true };
-    const [total, categorias] = await Promise.all([
-        Categoria.countDocuments(query),
-        Categoria.find(query)
+    const [total, categoriasTiendas] = await Promise.all([
+        CategoriaTienda.countDocuments(query),
+        CategoriaTienda.find(query)
         .limit(Number(limite))
         .skip(Number(desde))
 
@@ -17,36 +18,37 @@ const obtenerCategorias = async(req, res = response) => {
     ]);
     res.json({
         total,
-        categorias
+        categoriasTiendas
     });
 }
 
 
 // obtenerCategoria populate
 
-const obtenerCategoria = async(req = request, res = response) => {
+const obtenerCategoriaTiendaPorId = async(req = request, res = response) => {
     const { id } = req.params;
+    console.log('Params', req.params);
     const { query } = { estado: true }
-    const [categoria] = await Promise.all([
-        Categoria.findById(id),
-        Categoria.find(query)
+    const [categoriaTienda] = await Promise.all([
+        CategoriaTienda.findById(id),
+        CategoriaTienda.find(query)
         .populate({ path: 'usuario', select: 'name' })
     ]);
     res.json({
-        categoria
+        categoriaTienda
     });
 
 }
 
 
 
-const crearCategoria = async(req = request, res = response) => {
+const crearCategoriaTienda = async(req = request, res = response) => {
     const nombre = req.body.nombre.toUpperCase();
 
-    const categoriaDB = await Categoria.findOne({ nombre });
-    if (categoriaDB) {
+    const categoriaTiendaDB = await CategoriaTienda.findOne({ nombre });
+    if (categoriaTiendaDB) {
         return res.status(400).json({
-            msg: `La categoria ${categoriaDB.nombre}, ya existe`
+            msg: `La categoria ${categoriaTiendaDB.nombre}, ya existe`
         });
     }
 
@@ -58,11 +60,11 @@ const crearCategoria = async(req = request, res = response) => {
         usuario: req.usuario._id
     }
 
-    const categoria = new Categoria(data);
+    const categoriaTienda = new CategoriaTienda(data);
 
-    await categoria.save();
+    await categoriaTienda.save();
 
-    res.status(201).json(categoria);
+    res.status(201).json(categoriaTienda);
 
 }
 
@@ -71,27 +73,18 @@ const crearCategoria = async(req = request, res = response) => {
 
 // actualizarCategoria
 
-const actualizarCategoria = async(req, res = response) => {
+const actualizarCategoriaTienda = async(req, res = response) => {
     const { id } = req.params;
     const { estado, usuario, ...data } = req.body;
+
     data.nombre = data.nombre.toUpperCase();
     data.usuario = req.usuario._id;
 
     // Validar contra Base de datos
-    const categoria = await Categoria.findByIdAndUpdate(id, data, { new: true, runValidators: true })
+    const categoriaTienda = await CategoriaTienda.findByIdAndUpdate(id, data, { new: true, runValidators: true })
         .populate({ path: 'usuario', select: 'name' });
 
-    res.status(201).json(categoria);
-
-    // if (categoriaDB) {
-    //     return res.status(400).json({
-    //         msg: `Ya existe una categoria: ${categoriaDB.nombre}`
-    //     });
-    // }
-    // const data = {
-    //     nombre,
-    //     usuario: req.usuario._id
-    // }
+    res.status(201).json(categoriaTienda);
 
 
     /***
@@ -105,16 +98,16 @@ const actualizarCategoria = async(req, res = response) => {
 
 // borrarCategoria - estado: false
 
-const borrarCategoria = async(req, res = response) => {
+const borrarCategoriaTienda = async(req, res = response) => {
     const { id } = req.params;
 
     // Extrae el usuario que viene por el request del middleware
     // const usuarioAutenticado = req.usuario;
     // const uid = req.uid;
     // const usuario = await Usuario.findByIdAndDelete(id);
-    const categoria = await Categoria.findByIdAndUpdate(id, { estado: false }, { new: true });
+    const categoriaTienda = await CategoriaTienda.findByIdAndUpdate(id, { estado: false }, { new: true });
     res.json({
-        categoria,
+        categoriaTienda,
         // usuarioAutenticado
     });
 }
@@ -127,9 +120,9 @@ const borrarCategoria = async(req, res = response) => {
 
 
 module.exports = {
-    crearCategoria,
-    obtenerCategorias,
-    obtenerCategoria,
-    actualizarCategoria,
-    borrarCategoria
+    crearCategoriaTienda,
+    obtenerCategoriasTiendas,
+    obtenerCategoriaTiendaPorId,
+    actualizarCategoriaTienda,
+    borrarCategoriaTienda
 }

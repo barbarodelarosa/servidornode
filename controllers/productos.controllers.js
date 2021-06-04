@@ -27,7 +27,7 @@ const obtenerProductos = async(req, res = response) => {
 
 const obtenerProductoPorId = async(req = request, res = response) => {
     const { id } = req.params;
-    const { query } = { estado: true }
+    const query = { estado: true }
     const [producto] = await Promise.all([
         Producto.findById(id),
         Producto.find(query)
@@ -90,17 +90,6 @@ const actualizarProducto = async(req, res = response) => {
 
     res.status(201).json(producto);
 
-    // if (categoriaDB) {
-    //     return res.status(400).json({
-    //         msg: `Ya existe una categoria: ${categoriaDB.nombre}`
-    //     });
-    // }
-    // const data = {
-    //     nombre,
-    //     usuario: req.usuario._id
-    // }
-
-
     /***
     Es muy importante agregar  { new: true, runValidators: true  } para que este devuel el query
     new: true devuelve el nuevo arreglo y el runValidators: true valida si la informacion cumple los requisitos
@@ -119,17 +108,12 @@ const borrarProducto = async(req, res = response) => {
     // const usuarioAutenticado = req.usuario;
     // const uid = req.uid;
     // const usuario = await Usuario.findByIdAndDelete(id);
-    const producto = await Producto.findByIdAndUpdate(id, { state: false }, { new: true });
+    const producto = await Producto.findByIdAndUpdate(id, { estado: false }, { new: true });
     res.json({
         producto,
         // usuarioAutenticado
     });
 }
-
-
-
-
-
 
 
 

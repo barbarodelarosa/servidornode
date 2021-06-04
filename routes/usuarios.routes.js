@@ -13,24 +13,55 @@
  //  const { validarJWT } = require('../middlewares/validar-jwt');
  //  const { tieneRole } = require('../middlewares/validar-roles');
 
- router.get('/', api_usuarios.usuariosGet);
- router.post('/', [
-     check('name', 'El nombre es obligatorio').not().isEmpty(),
-     check('password', 'La contraseña debe ser de más de 6 letras').isLength({ min: 6 }),
+ //OPTENER LISTA DE USUARIOS
+ router.get('/', [validarJWT], api_usuarios.usuariosGet);
 
-     check('email', 'El correo no es valido').isEmail(),
-     check('email').custom(existeEmail),
+
+ router.get('/usuario', [
+     validarJWT,
+     //  check('id', 'No es un id válido').isMongoId(),
+     //  check('id').custom(existeUsuarioPorId),
+
+     //  validarCampos
+ ], api_usuarios.obtenerUsuario);
+
+
+
+ /*
+  router.get('/:id', [
+      validarJWT,
+     check('id', 'No es un id válido').isMongoId(),
+     check('id').custom(existeUsuarioPorId),
+
+     validarCampos
+ ], api_usuarios.usuariosGetPorId);
+
+ */
+
+
+
+ //REGISTRAR USUARIOS
+ router.post('/', [
+     check('nombreusuario', 'El nombre es obligatorio').not().isEmpty(),
+     check('contrasena', 'La contraseña debe ser de más de 6 letras').isLength({ min: 6 }),
+
+     check('correo', 'El correo no es valido').isEmail(),
+     check('correo').custom(existeEmail),
      //  check('rol').custom(esRolValido),
      check('rol', 'No es un rol válido').isIn(['ADMIN_ROLE', 'USER_ROLE', 'VENTA_ROLE']),
-     validarCampos
+     validarCampos,
  ], api_usuarios.usuariosPost);
 
  router.put('/:id', [
      check('id', 'No es un id válido').isMongoId(),
      check('id').custom(existeUsuarioPorId),
-     check('rol').custom(esRolValido),
+     //  check('rol').custom(esRolValido),
+     //  check('rol', 'No es un rol válidooo').isIn(['ADMIN_ROLE', 'USER_ROLE', 'VENTA_ROLE']),
 
-     validarCampos
+
+     validarCampos,
+     validarJWT,
+
  ], api_usuarios.usuariosPut);
 
 
@@ -39,7 +70,9 @@
      //  adminRole,
      tieneRole('ADMIN_ROLE', 'VENTAS_ROLE'),
      check('id', 'No es un id válido').isMongoId(),
-     check('id').custom(existeUsuarioPorId),
+     //  check('id').custom(existeUsuarioPorId),
+     //  check('rol', 'No es un rol válido').isIn(['ADMIN_ROLE', 'USER_ROLE', 'VENTA_ROLE']),
+
      validarCampos
  ], api_usuarios.usuariosDelete);
 

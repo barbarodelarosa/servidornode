@@ -5,6 +5,7 @@ const TiendaSchema = Schema({
         type: String,
         required: [true, 'El nombre es requerido'],
     },
+    logo: { type: String },
     estado: {
         type: Boolean,
         default: true,
@@ -13,7 +14,12 @@ const TiendaSchema = Schema({
     usuario: {
         type: Schema.Types.ObjectId,
         ref: 'Usuario',
-        required: true
+        required: [true, 'El usuario es obligatorio']
+    },
+    categoria: {
+        type: Schema.Types.ObjectId,
+        ref: 'CategoriaTienda',
+        required: [false, 'La categoria es obligatoria']
     },
     disponible: {
         type: Boolean,

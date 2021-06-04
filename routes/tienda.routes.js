@@ -54,7 +54,7 @@ router.put('/:id', [
     // check('categoria', 'No es un id valido de categoria ').isMongoId(),
     check('id', 'No es un id de tienda, valido').isMongoId(),
     check('id').custom(existeTiendaPorId),
-    tieneRole('ADMIN_ROLE', 'VENTA_ROLE'),
+    // tieneRole('ADMIN_ROLE', 'VENTA_ROLE'),
     validarCampos,
 ], actualizarTienda);
 

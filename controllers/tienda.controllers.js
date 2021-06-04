@@ -1,5 +1,6 @@
 const { response, request } = require("express");
 const { Tienda, Usuario } = require("../models");
+const { moverImagensDeTempHaciaPost } = require('../helpers');
 
 
 // obtenerCategorias - paginado - total - populate
@@ -41,9 +42,16 @@ const obtenerTiendaPorId = async(req = request, res = response) => {
 
 
 const crearTienda = async(req = request, res = response) => {
-    const nombre = req.body.nombre.toUpperCase();
+    // const nombre = req.body.nombre.toUpperCase();
+    const { nombre, ...body } = req.body;
+    const logo = req.body.logo;
+    const nombreUpercase = nombre.toUpperCase();
+    const imagenes = moverImagensDeTempHaciaPost(req.usuario._id, `imagenes/${req.usuario._id}/temp`, `imagenes/${req.usuario._id}/tienda`);
 
-    const tiendaDB = await Tienda.findOne({ nombre });
+    body.imagenes = imagenes;
+
+
+    const tiendaDB = await Tienda.findOne({ nombre: nombreUpercase });
     if (tiendaDB) {
         return res.status(400).json({
             msg: `Ya existe una tienda con el nombre: ${tiendaDB.nombre}`
@@ -54,8 +62,9 @@ const crearTienda = async(req = request, res = response) => {
     //Generar datos a guardar
 
     const data = {
-        nombre,
-        usuario: req.usuario._id
+        nombre: nombreUpercase,
+        usuario: req.usuario._id,
+        logo
     }
 
     const tienda = new Tienda(data);
@@ -73,7 +82,9 @@ const crearTienda = async(req = request, res = response) => {
 
 const actualizarTienda = async(req, res = response) => {
     const { id } = req.params;
+
     const { estado, usuario, ...data } = req.body;
+
     data.nombre = data.nombre.toUpperCase();
     data.usuario = req.usuario._id;
 
@@ -83,15 +94,6 @@ const actualizarTienda = async(req, res = response) => {
 
     res.status(201).json(tienda);
 
-    // if (categoriaDB) {
-    //     return res.status(400).json({
-    //         msg: `Ya existe una categoria: ${categoriaDB.nombre}`
-    //     });
-    // }
-    // const data = {
-    //     nombre,
-    //     usuario: req.usuario._id
-    // }
 
 
     /***
@@ -107,22 +109,17 @@ const actualizarTienda = async(req, res = response) => {
 
 const borrarTienda = async(req, res = response) => {
     const { id } = req.params;
-
+    console.log(id);
     // Extrae el usuario que viene por el request del middleware
     // const usuarioAutenticado = req.usuario;
     // const uid = req.uid;
     // const usuario = await Usuario.findByIdAndDelete(id);
-    const tienda = await Categoria.findByIdAndUpdate(id, { estado: false }, { new: true });
+    const tienda = await Tienda.findByIdAndUpdate(id, { estado: false, disponible: false }, { new: true });
     res.json({
         tienda,
         // usuarioAutenticado
     });
 }
-
-
-
-
-
 
 
 

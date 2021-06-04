@@ -6,7 +6,6 @@ const Usuario = require('../models/usuario.models');
 
 const validarJWT = async(req = request, res = response, next) => {
     const token = req.header('x-token');
-    console.log(token);
     if (!token) {
         return res.status(401).json({
             msg: 'No hay token en la petición'
@@ -27,7 +26,7 @@ const validarJWT = async(req = request, res = response, next) => {
         }
         req.usuario = usuario;
         // Verifica si el usuario esta activo
-        if (!usuario.state) {
+        if (!usuario.estado) {
             return res.status(401).json({
                 msg: 'Token no válido - Usuario con estado false'
             });
@@ -37,7 +36,6 @@ const validarJWT = async(req = request, res = response, next) => {
 
         next()
     } catch (error) {
-        console.log(error);
         res.status(401).json({
             msg: 'Token no válido'
         });
@@ -45,6 +43,7 @@ const validarJWT = async(req = request, res = response, next) => {
 
 
 }
+
 
 module.exports = {
     validarJWT

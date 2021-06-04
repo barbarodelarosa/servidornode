@@ -3,6 +3,7 @@ const existeCategoria = require('./existe-categoria.helpers');
 const generarJWT = require('./generar-jwt.helpers');
 const existeProducto = require('./existe-producto.helpers');
 const subirArchivo = require('./subir-archivo.helpers');
+const existeRequest = require('./existe-request.helpers')
 
 
 
@@ -12,5 +13,6 @@ module.exports = {
     ...existeCategoria,
     ...generarJWT,
     ...existeProducto,
-    ...subirArchivo
+    ...subirArchivo,
+    ...existeRequest
 }

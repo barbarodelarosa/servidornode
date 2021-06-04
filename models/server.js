@@ -17,6 +17,8 @@ class Server {
                 productos: '/api/productos',
                 tiendas: '/api/tiendas',
                 uploads: '/api/uploads',
+                categoriastiendas: '/api/categoriastiendas',
+                post: '/api/post'
             }
             // this.usuariosPath = '/api/usuarios';
             // this.authPath = '/api/auth';
@@ -63,6 +65,8 @@ class Server {
         this.app.use(this.path.productos, require('../routes/productos.routes'));
         this.app.use(this.path.tiendas, require('../routes/tienda.routes'));
         this.app.use(this.path.uploads, require('../routes/uploads.routes'));
+        this.app.use(this.path.categoriastiendas, require('../routes/categoria-tienda.routes'));
+        this.app.use(this.path.post, require('../routes/post.routes'));
 
     }
 
